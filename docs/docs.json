@@ -1,0 +1,9 @@
+{
+    "copyright":"MikroElektronika",
+    "title":"Thumbstick Click",
+    "text":"The Thumbstick Click is a simple joystick coupled to a 12bit ADC for fine resolution and smooth movements.",
+    "version":"0.1",
+    "files":[
+        ["Thumbstick click","thumbstick.py"]
+        ]
+}
