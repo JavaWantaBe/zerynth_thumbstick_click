@@ -37,7 +37,7 @@ class Thumbstick:
 
     """
     def __init__(self, cs, spidev, button):
-        self.port = spi.Spi.__init__(self, cs, spidev, 1000000)
+        self.port = spi.Spi.__init__(cs, spidev, 1000000)
 
         self.cal_x_max = 3840
         self.cal_y_max = 3840
