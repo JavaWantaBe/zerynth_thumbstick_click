@@ -19,7 +19,7 @@ of analog movements are converted via a SPI based ADC with 12bit resolution.
 import spi
 
 
-class Thumbstick:
+class Thumbstick(spi.Spi):
     """
 .. class:: Thumbstick
 
@@ -37,7 +37,7 @@ class Thumbstick:
 
     """
     def __init__(self, cs, spidev, button):
-        self.port = spi.Spi.__init__(cs, spidev, 1000000)
+        spi.Spi.__init__(self, cs, spidev, 1000000)
 
         self.cal_x_max = 3840
         self.cal_y_max = 3840
@@ -45,11 +45,6 @@ class Thumbstick:
         self.cal_y_min = 5
         self.x_zero = 6
         self.y_zero = 6
-
-        try:
-            self.port.start()
-        except PeripheralError as e:
-            print(e)
 
         pinMode(button, INPUT)
 
@@ -62,33 +57,34 @@ class Thumbstick:
         read_x      = bytes((1 << 6,))
         reading     = shortarray(2)
 
-        try:
-            self.port.lock()
-            self.port.select()
-            self.port.write(measure_cmd)
-            high = self.port.exchange(read_x)
-            low = self.port.read(1)
+        self.lock()
+        self.select()
 
+        try:
+            self.write(measure_cmd)
+            high = self.exchange(read_x)
+            low = self.read(1)
             reading[0] = ((high[0] & 0x0f) << 8) or (low[0] & 0xff)
         except PeripheralError as e:
             print(e)
         finally:
-            self.port.unselect()
-            self.port.unlock()
+            self.unselect()
+            self.unlock()
+
+        self.lock()
+        self.select()
 
         try:
-            self.port.lock()
-            self.port.select()
-            self.port.write(measure_cmd)
-            high = self.port.exchange( read_y )
-            low = self.port.read( 1 )
+            self.write(measure_cmd)
+            high = self.exchange( read_y )
+            low = self.read( 1 )
 
             reading[1] = ( ( high[0] & 0x0f ) << 8 ) or ( low[0] & 0xff )
         except PeripheralError as e:
             print( e )
         finally:
-            self.port.unselect()
-            self.port.unlock()
+            self.unselect()
+            self.unlock()
 
         return reading[0], reading[1]
 
